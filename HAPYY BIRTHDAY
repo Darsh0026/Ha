@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💙</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-family: "Trebuchet MS", Arial, sans-serif;
+        background:
+            radial-gradient(circle at 20% 20%, rgba(120,170,255,.18), transparent 25%),
+            radial-gradient(circle at 80% 80%, rgba(100,130,255,.15), transparent 25%),
+            #07152d;
+        color: #102b55;
+    }
+
+    /* ---------- FLOATING BACKGROUND ---------- */
+
+    .background {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .star {
+        position: absolute;
+        color: rgba(255,255,255,.8);
+        animation: float 5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+            opacity: .5;
+        }
+
+        50% {
+            transform: translateY(-18px) rotate(12deg);
+            opacity: 1;
+        }
+    }
+
+    /* ---------- INTRO ---------- */
+
+    .intro {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+        background: #07152d;
+        transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    .intro.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .intro-box {
+        text-align: center;
+        color: white;
+    }
+
+    .intro-box h1 {
+        font-size: clamp(2rem, 8vw, 4rem);
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+    }
+
+    .intro-box p {
+        opacity: .75;
+        margin-bottom: 35px;
+        font-size: 1rem;
+    }
+
+    .open-button {
+        border: none;
+        padding: 15px 32px;
+        border-radius: 999px;
+        background: #9cc9ff;
+        color: #08204a;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 10px 35px rgba(100,170,255,.25);
+        transition: transform .25s, box-shadow .25s;
+    }
+
+    .open-button:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 15px 40px rgba(100,170,255,.4);
+    }
+
+    /* ---------- MAIN CARD ---------- */
+
+    .site {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 60px 18px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .card {
+        width: min(760px, 100%);
+        background: #f8f4e9;
+        border-radius: 12px;
+        padding: clamp(28px, 6vw, 65px);
+        box-shadow:
+            0 30px 80px rgba(0,0,0,.4),
+            0 0 0 8px rgba(140,180,235,.12);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(35px);
+        transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* paper texture */
+    .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: .12;
+        background-image:
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,.08) 4px
+            );
+    }
+
+    .tape {
+        position: absolute;
+        width: 130px;
+        height: 35px;
+        background: rgba(130,170,220,.35);
+        transform: rotate(-7deg);
+    }
+
+    .tape.one {
+        top: 20px;
+        left: -30px;
+    }
+
+    .tape.two {
+        top: 25px;
+        right: -30px;
+        transform: rotate(7deg);
+    }
+
+    /* ---------- HEADER ---------- */
+
+    .birthday {
+        position: relative;
+        text-align: center;
+        color: #124582;
+    }
+
+    .birthday h1 {
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-size: clamp(3rem, 11vw, 6rem);
+        line-height: .95;
+        margin-bottom: 18px;
+    }
+
+    .underline {
+        width: 170px;
+        height: 7px;
+        margin: auto;
+        border-radius: 20px;
+        background: #6f9bd0;
+        transform: rotate(-2deg);
+    }
+
+    .subtitle {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #31527e;
+    }
+
+    /* ---------- LITTLE INFO CARDS ---------- */
+
+    .memories {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin: 42px 0;
+    }
+
+    .memory {
+        padding: 20px 12px;
+        background: #dce9fa;
+        border-radius: 8px;
+        text-align: center;
+        transform: rotate(var(--rotation));
+        transition: transform .3s ease;
+    }
+
+    .memory:hover {
+        transform: rotate(0deg) translateY(-5px);
+    }
+
+    .memory .icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+
+    .memory h3 {
+        font-size: .9rem;
+        margin-bottom: 5px;
+    }
+
+    .memory p {
+        font-size: .78rem;
+        opacity: .75;
+    }
+
+    /* ---------- MESSAGE ---------- */
+
+    .message {
+        position: relative;
+        margin-top: 35px;
+        padding: 30px;
+        border-left: 5px solid #477bb9;
+        background: rgba(206,224,247,.45);
+        line-height: 1.8;
+        font-size: 1rem;
+        color: #183c69;
+    }
+
+    .message p {
+        margin-bottom: 15px;
+    }
+
+    .message p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* ---------- BIG HEART ---------- */
+
+    .heart-section {
+        position: relative;
+        text-align: center;
+        margin: 45px 0 25px;
+    }
+
+    .heart {
+        font-size: 4rem;
+        display: inline-block;
+        animation: heartbeat 1.8s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        15% {
+            transform: scale(1.12);
+        }
+
+        30% {
+            transform: scale(1);
+        }
+
+        45% {
+            transform: scale(1.08);
+        }
+    }
+
+    /* ---------- FOOTER ---------- */
+
+    .footer {
+        position: relative;
+        text-align: center;
+        margin-top: 35px;
+        color: #365b86;
+    }
+
+    .footer .small {
+        font-size: .8rem;
+        opacity: .7;
+        margin-top: 10px;
+    }
+
+    .signature {
+        margin-top: 22px;
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-size: 1.4rem;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+
+    @media (max-width: 600px) {
+
+        .site {
+            padding: 25px 12px;
+        }
+
+        .card {
+            padding: 32px 22px;
+        }
+
+        .memories {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .memory {
+            transform: rotate(0deg);
+        }
+
+        .message {
+            padding: 22px;
+        }
+    }
+</style>
+</head>
+
+
+<body>
+
+<!-- FLOATING BACKGROUND -->
+<div class="background">
+    <span class="star" style="top:8%;left:12%;font-size:20px;">✦</span>
+    <span class="star" style="top:15%;left:82%;font-size:14px;animation-delay:1s;">✧</span>
+    <span class="star" style="top:42%;left:7%;font-size:17px;animation-delay:2s;">✦</span>
+    <span class="star" style="top:63%;left:90%;font-size:20px;animation-delay:.5s;">✧</span>
+    <span class="star" style="top:83%;left:17%;font-size:13px;animation-delay:1.5s;">✦</span>
+    <span class="star" style="top:91%;left:75%;font-size:18px;animation-delay:2.5s;">✧</span>
+</div>
+
+
+<!-- OPEN SCREEN -->
+
+<section class="intro" id="intro">
+
+    <div class="intro-box">
+
+        <h1>Hey you 💙</h1>
+
+        <p>
+            I made a little something for your birthday.
+        </p>
+
+        <button class="open-button" onclick="openCard()">
+            Open it ✨
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- MAIN WEBSITE -->
+
+<main class="site">
+
+    <article class="card" id="card">
+
+        <div class="tape one"></div>
+        <div class="tape two"></div>
+
+
+        <!-- TITLE -->
+
+        <header class="birthday">
+
+            <h1>
+                happy<br>
+                birthdayyy
+            </h1>
+
+            <div class="underline"></div>
+
+            <p class="subtitle">
+                A little something for you because apparently
+                an emoji rose isn't enough 😭💙
+            </p>
+
+        </header>
+
+
+        <!-- THINGS THAT REMIND ME OF YOU -->
+
+        <section class="memories">
+
+            <div class="memory" style="--rotation:-2deg;">
+
+                <div class="icon">📖</div>
+
+                <h3>Books</h3>
+
+                <p>McFredda 💙</p>
+
+            </div>
+
+
+            <div class="memory" style="--rotation:1.5deg;">
+
+                <div class="icon">🎵</div>
+
+                <h3>A song</h3>
+
+                <p>The Cure</p>
+
+            </div>
+
+
+            <div class="memory" style="--rotation:-1deg;">
+
+                <div class="icon">💙</div>
+
+                <h3>Your colour</h3>
+
+                <p>Blue, obviously.</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- MESSAGE -->
+
+        <section class="message">
+
+            <p>
+                I hope your birthday is genuinely a good one,
+                and that this year gives you a lot of reasons to smile.
+            </p>
+
+            <p>
+                I hope you make some really good memories,
+                get everything you've been hoping for,
+                and have way better cookies this time 😭🍪
+            </p>
+
+            <p>
+                And seriously, don't forget to enjoy your day.
+                Today is about you.
+            </p>
+
+        </section>
+
+
+        <!-- HEART -->
+
+        <section class="heart-section">
+
+            <div class="heart">💙</div>
+
+        </section>
+
+
+        <!-- END -->
+
+        <footer class="footer">
+
+            <p>
+                Keep smiling. Keep shining. ✨
+            </p>
+
+            <p class="signature">
+                Happy birthday once again 💙
+            </p>
+
+            <p class="small">
+                — from someone who hopes you have an amazing day
+            </p>
+
+        </footer>
+
+    </article>
+
+</main>
+
+
+<script>
+
+function openCard() {
+
+    const intro = document.getElementById("intro");
+    const card = document.getElementById("card");
+
+    intro.classList.add("hidden");
+
+    setTimeout(() => {
+        card.classList.add("show");
+    }, 500);
+
+    // little burst of hearts
+    createHearts();
+}
+
+
+function createHearts() {
+
+    const symbols = ["💙", "✦", "✧", "♡"];
+
+    for (let i = 0; i < 18; i++) {
+
+        const heart = document.createElement("div");
+
+        heart.textContent =
+            symbols[Math.floor(Math.random() * symbols.length)];
+
+        heart.style.position = "fixed";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.top = "105vh";
+        heart.style.fontSize = (12 + Math.random() * 18) + "px";
+        heart.style.zIndex = "20";
+        heart.style.pointerEvents = "none";
+
+        document.body.appendChild(heart);
+
+        const duration = 2500 + Math.random() * 2500;
+
+        heart.animate(
+            [
+                {
+                    transform: "translateY(0) rotate(0deg)",
+                    opacity: 0
+                },
+                {
+                    transform:
+                        `translateY(-${80 + Math.random() * 60}vh)
+                         rotate(${Math.random() * 360}deg)`,
+                    opacity: 1
+                }
+            ],
+            {
+                duration: duration,
+                easing: "ease-out"
+            }
+        );
+
+        setTimeout(() => {
+            heart.remove();
+        }, duration);
+    }
+}
+
+</script>
+
+</body>
+</html>
